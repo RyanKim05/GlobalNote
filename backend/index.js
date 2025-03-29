@@ -3,6 +3,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { OpenAI } = require("openai");
 require("dotenv").config();
+const textToSpeech = require('@google-cloud/text-to-speech');
+const fs = require('fs');
+const client = new textToSpeech.TextToSpeechClient();
 
 const app = express();
 const PORT = 5000;
@@ -99,6 +102,31 @@ Return ONLY a valid JSON object in this exact format (no intro text, no code blo
   } catch (err) {
     console.error("❌ OpenAI API error:", err.message);
     res.status(500).json({ error: "Failed to generate language content." });
+  }
+});
+
+app.post("/api/tts", async (req, res) => {
+  const { text, languageCode } = req.body;
+  const lang = languageCode || 'en-US'; // Fallback to English
+
+  const request = {
+    input: { text },
+    voice: {
+      languageCode: lang,
+      ssmlGender: 'FEMALE',
+    },
+    audioConfig: {
+      audioEncoding: 'MP3',
+    },
+  };
+
+  try {
+    const [response] = await client.synthesizeSpeech(request);
+    res.set('Content-Type', 'audio/mp3');
+    res.send(response.audioContent);
+  } catch (error) {
+    console.error("❌ TTS API Error:", error);
+    res.status(500).json({ error: "Text-to-Speech failed", details: error.message });
   }
 });
 
