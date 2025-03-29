@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { OpenAI } = require("openai");
+const { OpenAI } = require("openai/index.mjs");
 require("dotenv").config();
 const textToSpeech = require('@google-cloud/text-to-speech');
 const fs = require('fs');
@@ -28,7 +28,7 @@ Their activities include: ${activities}
 
 Please generate:
 
-1. 10 vocabulary words (with translation, category, difficulty 1–3)
+1. 10 vocabulary words (with english phonetic translation or how to pronounce in english PUT IN PARENTHESES), category, difficulty 1–3)
 2. 5 useful phrases (with translation, context)
 3. 3 real-life situations (title and description)
 4. A 7-day study plan (day + task)
@@ -128,6 +128,13 @@ app.post("/api/tts", async (req, res) => {
     console.error("❌ TTS API Error:", error);
     res.status(500).json({ error: "Text-to-Speech failed", details: error.message });
   }
+});
+
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 app.listen(PORT, () => {
