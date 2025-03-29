@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GlobalNote - Study Abroad Language Planner</title>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #4895ef;
+      --secondary: #f72585;
+      --dark: #3a0ca3;
+      --light: #f8f9fa;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --gray-100: #f8f9fa;
+      --gray-200: #e9ecef;
+      --gray-300: #dee2e6;
+      --gray-400: #ced4da;
+      --gray-500: #adb5bd;
+      --gray-800: #343a40;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--gray-100);
+      color: var(--gray-800);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      color: white;
+      text-align: center;
+      padding: 2rem 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .tagline {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .input-section {
+      flex: 1;
+      min-width: 300px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .output-section {
+      flex: 2;
+      min-width: 400px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--dark);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .spinner {
+      border: 4px solid var(--gray-200);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .vocabulary-section, .phrases-section, .situations-section, .study-plan-section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background-color: var(--gray-100);
+      border-radius: 6px;
+    }
+
+    .word-card {
+      display: flex;
+      justify-content: space-between;
+      background-color: white;
+      border-radius: 4px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--primary-light);
+      transition: transform 0.2s;
+    }
+
+    .word-card:hover {
+      transform: translateX(5px);
+    }
+
+    .phrase-item {
+      background-color: white;
+      border-radius: 4px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--secondary);
+    }
+
+    .situation-card {
+      background-color: white;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--success);
+    }
+
+    .favorites-button {
+      background-color: transparent;
+      color: var(--gray-500);
+      padding: 0.25rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .favorites-button:hover, .favorites-button.active {
+      color: var(--warning);
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--gray-200);
+      border: none;
+      border-radius: 4px 4px 0 0;
+      margin-right: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .tab.active {
+      background-color: white;
+      font-weight: 600;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .study-plan-day {
+      background-color: white;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--dark);
+    }
+
+    .flashcard {
+      width: 200px;
+      height: 150px;
+      background-color: var(--gray-100);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s;
+      perspective: 1000px;
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .flashcard:hover {
+      transform: scale(1.05);
+    }
+
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      backface-visibility: hidden;
+      padding: 1rem;
+      width: 100%;
+      height: 100%;
+    }
+
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background-color: var(--primary-light);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .difficulty {
+      display: flex;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .difficulty-label {
+      margin-right: 0.5rem;
+      font-weight: 600;
+    }
+
+    .difficulty-level {
+      display: flex;
+    }
+
+    .difficulty-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--gray-300);
+      margin-right: 3px;
+    }
+
+    .difficulty-dot.active {
+      background-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .input-section, .output-section {
+        width: 100%;
+      }
+    }
+
+    .flashcard.flipped .flashcard-front {
+  transform: rotateY(180deg);
+}
+.flashcard.flipped .flashcard-back {
+  transform: rotateY(0deg);
+}
+.flashcard-front, .flashcard-back {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flashcard-front {
+  transform: rotateY(0deg);
+}
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">GlobalNote</div>
+    <div class="tagline">Prepare for your study abroad experience with personalized language learning</div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="input-section">
+        <h2>Plan Your Language Learning</h2>
+        <form id="language-form">
+          <div class="form-group">
+            <label for="destination">Where are you going?</label>
+            <input type="text" id="destination" placeholder="e.g., Spain, Tokyo, Brazil" required />
+          </div>
+
+          <div class="form-group">
+            <label for="language">What language do you want to learn?</label>
+            <input type="text" id="language" placeholder="e.g., Spanish, Japanese, French" required />
+          </div>
+
+          <div class="form-group">
+            <label for="activities">What will you be doing there?</label>
+            <textarea id="activities" rows="4" placeholder="e.g., attending university, traveling, volunteering" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="proficiency">Your current language proficiency</label>
+            <select id="proficiency">
+              <option value="beginner">Beginner</option>
+              <option value="elementary">Elementary</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+
+          <button type="submit" id="generate-btn">Generate Study Plan</button>
+        </form>
+      </div>
+
+      <div class="output-section">
+        <div class="tabs">
+          <button class="tab active" data-tab="vocabulary">Vocabulary</button>
+          <button class="tab" data-tab="phrases">Common Phrases</button>
+          <button class="tab" data-tab="situations">Situations</button>
+        </div>
+
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Generating your personalized language content...</p>
+        </div>
+
+        <div class="tab-content active" id="vocabulary-tab">
+          <div class="vocabulary-section">
+            <h3>Essential Vocabulary</h3>
+            <div id="vocabulary-list"></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="phrases-tab">
+          <div class="phrases-section">
+            <h3>Useful Phrases</h3>
+            <div id="phrases-list"></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="situations-tab">
+          <div class="situations-section">
+            <h3>Practical Situations</h3>
+            <div id="flashcard-container" class="flashcard-section"></div>
+            <div id="situations-list"></div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>GlobalNote &copy; 2025. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const languageCodeMap = {
+  "persian": "fa-IR",
+  "farsi": "fa-IR",
+  "arabic": "ar-XA",
+  "chinese": "zh-CN",
+  "japanese": "ja-JP",
+  "korean": "ko-KR",
+  "french": "fr-FR",
+  "spanish": "es-ES",
+  "portuguese": "pt-PT",
+  "german": "de-DE",
+  "italian": "it-IT",
+  "russian": "ru-RU",
+  "hindi": "hi-IN",
+  "english": "en-US"
+};
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const tabId = tab.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+
+    // Form submit
+    document.getElementById('language-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      document.querySelector('.loading').style.display = 'block';
+
+      const destination = document.getElementById('destination').value;
+      const language = document.getElementById('language').value;
+      const activities = document.getElementById('activities').value;
+      const proficiency = document.getElementById('proficiency').value;
+
+      try {
+        const res = await fetch("http://localhost:5000/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ destination, language, activities, proficiency })
+        });
+
+        const data = await res.json();
+        populateResults(data);
+      } catch (error) {
+        console.error("❌ API Error:", error);
+      } finally {
+        document.querySelector('.loading').style.display = 'none';
+      }
+    });
+
+    function populateResults(data) {
+      const vocabList = document.getElementById('vocabulary-list');
+      const selectedLanguage = document.getElementById('language').value;
+      vocabList.innerHTML = '';
+      data.vocabulary?.forEach(item => {
+        vocabList.innerHTML += `
+          <div class="word-card">
+            <div>
+              <strong>${item.word}</strong> - ${item.translation}
+              <div><span class="badge">${item.category}</span></div>
+              <div class="difficulty">
+                <span class="difficulty-label">Difficulty:</span>
+                <div class="difficulty-level">
+                  ${[1,2,3].map(d => `<div class="difficulty-dot ${item.difficulty >= d ? 'active' : ''}"></div>`).join('')}
+                </div>
+              </div>
+            </div>
+<div>
+  <button class="favorites-button">★</button>
+<button onclick="speakFromAPI('${item.word}', '${selectedLanguage}')" class="favorites-button">🔊</button>
+</div>          </div>`;
+          
+      });
+
+      const phrasesList = document.getElementById('phrases-list');
+      phrasesList.innerHTML = '';
+      data.phrases?.forEach(item => {
+        phrasesList.innerHTML += `
+          <div class="phrase-item">
+  <strong>${item.phrase}</strong>
+<button onclick="speakFromAPI('${item.phrase}', '${selectedLanguage}')" class="favorites-button">🔊</button>
+  <p>${item.translation}</p>
+  <span class="badge">${item.context}</span>
+</div>`;
+      });
+
+      const situationsList = document.getElementById('situations-list');
+      situationsList.innerHTML = '';
+      data.situations?.forEach(item => {
+        situationsList.innerHTML += `
+          <div class="situation-card">
+            <h4>${item.title}</h4>
+            <p>${item.description}</p>
+            <button onclick=window.open('https://chatgpt.com/g/g-67e81cbde5cc81918c191d530926328a-language-scenario-partner', '_blank')">Practice This Situation</button>
+          </div>`;
+      });
+
+
+      const flashcardContainer = document.getElementById('flashcard-container');
+      flashcardContainer.innerHTML = '<h3>Flashcards</h3>';
+      data.vocabulary?.forEach(word => {
+        const flashcard = document.createElement('div');
+        flashcard.className = 'flashcard';
+        flashcard.innerHTML = `
+          <div class="flashcard-front">${word.word}</div>
+          <div class="flashcard-back">${word.translation}</div>`;
+        flashcardContainer.appendChild(flashcard);
+      });
+
+      document.querySelectorAll('.flashcard').forEach(card => {
+        card.addEventListener('click', () => {
+          card.classList.toggle('flipped');
+        });
+      });
+    }
+    function speakFromAPI(text, languageName = "English") {
+  const langKey = languageName.trim().toLowerCase();
+  const languageCode = languageCodeMap[langKey] || "en-US"; // fallback
+
+  fetch("http://localhost:5000/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, languageCode })
+  })
+    .then(res => res.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.play();
+    })
+    .catch(err => {
+      console.error("❌ TTS API Error:", err);
+    });
+}
+  </script>
+</body>
+</html>

@@ -28,10 +28,9 @@ Their activities include: ${activities}
 
 Please generate:
 
-1. 10 vocabulary words (with english phonetic translation or how to pronounce in english PUT IN PARENTHESES), category, difficulty 1–3)
-2. 5 useful phrases (with translation, context)
+1. 10 vocabulary words (with english phonetic/pinyin, also put a related emoji at the end), category, difficulty 1–3)
+2. 5 useful phrases (with translation, context)(with english phonetic translation or how to pronounce in english PUT IN PARENTHESES directly after target language)
 3. 3 real-life situations (title and description)
-4. A 7-day study plan (day + task)
 
 Return ONLY a valid JSON object in this exact format (no intro text, no code block formatting):
 
@@ -55,12 +54,6 @@ Return ONLY a valid JSON object in this exact format (no intro text, no code blo
     {
       "title": "Ordering Food at a Café",
       "description": "How to ask for the menu, order, and pay at a café."
-    }
-  ],
-  "studyPlan": [
-    {
-      "day": "Monday",
-      "task": "Learn basic greetings and introductions"
     }
   ]
 }
