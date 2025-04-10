@@ -32,6 +32,5 @@
 Watch a quick demo of **GlobalNote** in action:  
 [GlobalNote Demo](https://github.com/user-attachments/assets/ea0e07ef-f0d4-4d4e-a791-67440013740f)
 
-*Note*: If the video doesn’t load, ensure it’s uploaded to your repo’s assets (e.g., via Issues or Releases) and the URL is correct.
 
 ---
